@@ -88,6 +88,7 @@ def getAiMove(board):
             legalMoves = generateLegalMoves(board)
 
             checkDeeper(board, 1, opponent)
+            return
 
     legalMoves = generateLegalMoves(board)
     board.push_san(legalMoves[0])
