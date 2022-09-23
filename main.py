@@ -12,7 +12,7 @@ def isWin(board):
 
         if board.piece_at(square).color == chess.BLACK:
             winner = "Black"
-            print(winner + " wins")
+            
             return winner
 
     for i in ["a", "b", "c", "d", "e"]:
@@ -23,7 +23,7 @@ def isWin(board):
 
         if board.piece_at(square).color == chess.WHITE:
             winner = "White"
-            print(winner + " wins")
+            
             return winner
 
     if board.is_stalemate():
@@ -32,8 +32,6 @@ def isWin(board):
         else:
             winner = "White"
 
-        print("Stalemate")
-        print(winner + " wins")
         return winner
 
     return False
@@ -99,5 +97,10 @@ def game():
         getAiMove(board)
 
     print(board)
+    if isWin(board) == "White":
+        print("White wins")
+    elif isWin(board) == "Black":
+        print("Black wins")
+
 
 game()
