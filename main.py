@@ -1,4 +1,5 @@
 import random
+from tabnanny import check
 import chess
 
 
@@ -49,19 +50,17 @@ def generateLegalMoves(board):
 
     return legalMoves
 
-def checkDeeper(board, depth, opponent):
-    if depth == 0:
-        return isWin(board)
-    else:
-        legalMoves = generateLegalMoves(board)
-        for i in legalMoves:
-            board.push_san(i)
-            if isWin(board) == opponent:
-                    board.pop()
-                    continue
-            checkDeeper(board, depth - 1, opponent)
-            board.pop()
-            return
+def canWin(board, player):
+    #check if player can win on next move
+    legalMoves = generateLegalMoves(board)
+
+    for i in legalMoves:
+        board.push_san(i)
+        if isWin(board) == player:
+            return True
+        board.pop()
+
+    return False
 
 def getAiMove(board):
     legalMoves = generateLegalMoves(board)
@@ -74,26 +73,22 @@ def getAiMove(board):
 
     #simulate all moves
     for i in legalMoves:
-        try: 
-            board.push_san(i)
-        except ValueError:
-            continue
+        board.push_san(i)
         if isWin(board) == player:
             return
-        if isWin(board) == opponent:
+
+        
+        #check if opponent can win on the next move
+        if canWin(board, opponent):
             board.pop()
             continue
-        if isWin(board) != opponent:
-            #check if the opponent can win on the next move
-            legalMoves = generateLegalMoves(board)
 
-            checkDeeper(board, 1, opponent)
-            return
 
-    legalMoves = generateLegalMoves(board)
+
+    #if no winning moves, make random move
+    print(player + " gave up")   
     board.push_san(legalMoves[0])
     return
-        
 
 def game():
     # make decapawn game
@@ -101,9 +96,13 @@ def game():
 
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
 
+    moves = []
+
     while not isWin(board):
         print(board)
         getAiMove(board)
+
+        moves.append(str(board.peek()))
 
     print(board)
     if isWin(board) == "White":
@@ -111,5 +110,6 @@ def game():
     elif isWin(board) == "Black":
         print("Black wins")
 
+    print(moves)
 
 game()
