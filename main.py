@@ -62,9 +62,15 @@ def getAiMove(board):
 
     #simulate all moves
     for i in legalMoves:
-        board.push_san(i)
+        try: 
+            board.push_san(i)
+        except ValueError:
+            continue
         if isWin(board) == player:
             return
+        if isWin(board) == opponent:
+            board.pop()
+            continue
         if isWin(board) != opponent:
             #check if the opponent can win on the next move
             legalMoves = generateLegalMoves(board)
@@ -73,10 +79,14 @@ def getAiMove(board):
                 board.push_san(j)
                 if isWin(board) == opponent:
                     board.pop()
-                    board.pop()
-                    return
+                    continue
                 board.pop()
                 return
+
+    legalMoves = generateLegalMoves(board)
+    board.push_san(legalMoves[0])
+    return
+        
 
 def game():
     # make decapawn game
