@@ -49,6 +49,20 @@ def generateLegalMoves(board):
 
     return legalMoves
 
+def checkDeeper(board, depth, opponent):
+    if depth == 0:
+        return isWin(board)
+    else:
+        legalMoves = generateLegalMoves(board)
+        for i in legalMoves:
+            board.push_san(i)
+            if isWin(board) == opponent:
+                    board.pop()
+                    continue
+            checkDeeper(board, depth - 1, opponent)
+            board.pop()
+            return
+
 def getAiMove(board):
     legalMoves = generateLegalMoves(board)
 
@@ -73,13 +87,7 @@ def getAiMove(board):
             #check if the opponent can win on the next move
             legalMoves = generateLegalMoves(board)
 
-            for j in legalMoves:
-                board.push_san(j)
-                if isWin(board) == opponent:
-                    board.pop()
-                    continue
-                board.pop()
-                return
+            checkDeeper(board, 1, opponent)
 
     legalMoves = generateLegalMoves(board)
     board.push_san(legalMoves[0])
