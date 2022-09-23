@@ -1,7 +1,7 @@
 import chess
 
 #function to determine wether anyone has won
-def isWin(turn, board):
+def isWin(board):
     #check if a pawn has reached the opposite rank
     for i in ["a", "b", "c", "d", "e"]:
         square = chess.parse_square(f'{i}1')
@@ -24,7 +24,7 @@ def isWin(turn, board):
             return True
 
     if board.is_stalemate():
-        if turn:
+        if board.turn:
             winner = "Black"
         else:
             winner = "White"
@@ -35,13 +35,13 @@ def isWin(turn, board):
     
     return False
 
-def getMove(turn, board):
-    move = input(("White " if turn else "Black ") + "move: ")
+def getMove(board):
+    move = input(("White " if board.turn else "Black ") + "move: ")
     try:
         board.parse_san(move)
     except ValueError:
         print("Invalid move")
-        getMove(turn, board)
+        getMove(board)
         return
         
     legalMoves = [str(i) for i in board.legal_moves]
@@ -58,7 +58,7 @@ def getMove(turn, board):
         board.push_san(move)
     else:
         print("Invalid move")
-        getMove(turn, board)
+        getMove(board)
 
 def game():
     #make decapawn game
@@ -66,11 +66,8 @@ def game():
 
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
     
-    whiteTurn = True
-    
-    while not isWin(whiteTurn, board):
+    while not isWin(board):
         print(board)
-        getMove(whiteTurn, board)
-        whiteTurn = not whiteTurn
+        getMove(board)
         
 game()
