@@ -71,7 +71,7 @@ def evaluate(board):
 
     return score
 
-def getBestMove(board, depth, color, calculatedBoards, calculatedScores):
+#def getBestMove(board, depth, color, calculatedBoards, calculatedScores):
     legalMoves = generateLegalMoves(board)
 
     #guard statement if reach max depth
@@ -119,6 +119,43 @@ def getBestMove(board, depth, color, calculatedBoards, calculatedScores):
 
     return bestMove
 
+def max(score, bestScore):
+    if score > bestScore:
+        return score
+    return bestScore
+
+def min(score, bestScore):
+    if score < bestScore:
+        return score
+    return bestScore
+
+def minimax(board, depth, maxPlayer):
+    if depth == 0 or isWin(board):
+        return evaluate(board), board
+
+    if maxPlayer:
+        maxEval = float('-inf')
+        best_move = None
+        for move in generateLegalMoves(board):
+            board.push_san(move)
+            evaluation = minimax(board, depth - 1, False)[0]
+            maxEval = max(maxEval, evaluation)
+            if maxEval == evaluation:
+                best_move = move
+            board.pop()
+        return maxEval, best_move
+    else:
+        minEval = float('inf')
+        best_move = None
+        for move in generateLegalMoves(board):
+            board.push_san(move)
+            evaluation = minimax(board, depth - 1, True)[0]
+            minEval = min(minEval, evaluation)
+            if minEval == evaluation:
+                best_move = move
+            board.pop()
+        return minEval, best_move
+
 def game():
     board = chess.Board()
 
@@ -131,10 +168,11 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
 
-        calculatedBoards = []
-        calculatedScores = []
-
-        board.push_san(getBestMove(board, 7, board.turn, calculatedBoards, calculatedScores))
+        #calculatedBoards = []
+        #calculatedScores = []
+        #board.push_san(getBestMove(board, 7, board.turn, calculatedBoards, calculatedScores))
+        
+        board.push_san(minimax(board, 7, board.turn)[1])
 
         moves.append(str(board.peek()))
 
