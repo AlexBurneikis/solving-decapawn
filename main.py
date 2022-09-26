@@ -41,6 +41,7 @@ def is_win(board):
 def get_legal_moves(board):
     legal_moves = [str(i) for i in board.legal_moves]
 
+    #cant allow pawn moving two spaces
     to_remove = []
     for i in legal_moves:
         if (int(i[3]) - int(i[1])) == 2:
@@ -49,7 +50,7 @@ def get_legal_moves(board):
     for i in to_remove:
         legal_moves.remove(i)
 
-    #randomize legalMoves
+    #randomize legalMoves - (otherwise same game every time)
     random.shuffle(legal_moves)
 
     return legal_moves
@@ -131,13 +132,13 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = minimax(board, 8, float("-inf"), float("inf"), board.turn)[1]
+        move = minimax(board, 10, float("-inf"), float("inf"), board.turn)[1]
 
         board.push_san(str(move))
 
         moves.append(str(board.peek()))
 
-    #post-game
+    #post-game info
     print(board)
     if is_win(board) == "White":
         print("White wins")
