@@ -48,47 +48,80 @@ def generateLegalMoves(board):
     for i in toRemove:
         legalMoves.remove(i)
 
-    return legalMoves
+    #randomize legalMoves
+    random.shuffle(legalMoves)
 
-def canWin(board, player):
-    #check if player can win on next move
+    return legalMoves  
+
+def evaluate(board):
+    #score is number of white pawns - number of black pawns
+    score = 0
+    
+    if isWin(board) == "White":
+        return 100
+
+    if isWin(board) == "Black":
+        return -100
+
+    for i in board.pieces(chess.PAWN, chess.WHITE):
+        score += 1
+
+    for i in board.pieces(chess.PAWN, chess.BLACK):
+        score -= 1
+
+    return score
+
+
+
+def getBestMove(board, depth, color):
     legalMoves = generateLegalMoves(board)
 
     for i in legalMoves:
         board.push_san(i)
-        if isWin(board) == player:
-            return True
+        if isWin(board):
+            board.pop()
+            return i
         board.pop()
 
-    return False
+    bestMove = legalMoves[0]
+    bestScore = 0
+
+    if depth == 0:
+        return legalMoves[0]
+
+    for i in legalMoves:
+        board.push_san(i)
+        #board.push_san(getBestMove(board, depth - 1, ("White" if color == "Black" else "Black")))
+        score = evaluate(board)
+        #board.pop()
+        board.pop()
+
+        if score >= bestScore and color == "White":
+            bestScore = score
+            bestMove = i
+
+        if score <= bestScore and color == "Black":
+            bestScore = score
+            bestMove = i
+
+    print(color)
+    print(bestScore)
+    return bestMove
 
 def getAiMove(board):
     legalMoves = generateLegalMoves(board)
 
     player = "White" if board.turn else "Black"
-    opponent = "Black" if board.turn else "White"
-    
-    #randomize legalMoves
-    random.shuffle(legalMoves)
 
-    #simulate all moves
+    #if player can win, win
     for i in legalMoves:
         board.push_san(i)
         if isWin(board) == player:
-            return
-
-        
-        #check if opponent can win on the next move
-        if canWin(board, opponent):
             board.pop()
-            continue
+            return i
+        board.pop()
 
-
-
-    #if no winning moves, make random move
-    print(player + " gave up")   
-    board.push_san(legalMoves[0])
-    return
+    return getBestMove(board, 3, player)
 
 def game():
     # make decapawn game
@@ -100,7 +133,7 @@ def game():
 
     while not isWin(board):
         print(board)
-        getAiMove(board)
+        board.push_san(getAiMove(board))
 
         moves.append(str(board.peek()))
 
