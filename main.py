@@ -79,7 +79,7 @@ def min(score, bestScore):
         return score
     return bestScore
 
-def minimax(board, depth, maxPlayer):
+def minimax(board, depth, alpha, beta, maxPlayer):
     if depth == 0 or isWin(board):
         return evaluate(board), board
 
@@ -88,22 +88,29 @@ def minimax(board, depth, maxPlayer):
         best_move = None
         for move in generateLegalMoves(board):
             board.push_san(move)
-            evaluation = minimax(board, depth - 1, False)[0]
+            evaluation = minimax(board, depth - 1, alpha, beta, False)[0]
+            board.pop()
             maxEval = max(maxEval, evaluation)
+            alpha = max(alpha, evaluation)
+            if beta <= alpha:
+                break
             if maxEval == evaluation:
                 best_move = move
-            board.pop()
         return maxEval, best_move
     else:
         minEval = float('inf')
         best_move = None
         for move in generateLegalMoves(board):
             board.push_san(move)
-            evaluation = minimax(board, depth - 1, True)[0]
+            evaluation = minimax(board, depth - 1, alpha, beta, True)[0]
+            board.pop()
             minEval = min(minEval, evaluation)
+            beta = min(beta, evaluation)
+            if beta <= alpha:
+                break
             if minEval == evaluation:
                 best_move = move
-            board.pop()
+            
         return minEval, best_move
 
 def game():
@@ -118,7 +125,7 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
         
-        board.push_san(minimax(board, 7, board.turn)[1])
+        board.push_san(minimax(board, 8, float("-inf"), float("inf"), board.turn)[1])
 
         moves.append(str(board.peek()))
 
