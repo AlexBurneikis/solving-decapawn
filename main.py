@@ -71,26 +71,21 @@ def evaluate(board):
 
     return score
 
-
-
 def getBestMove(board, depth, color):
     legalMoves = generateLegalMoves(board)
+
+    bestMove = legalMoves[0]
+    
+    if depth == 0:
+        return bestMove
+
+    bestScore = 0
 
     for i in legalMoves:
         board.push_san(i)
         if isWin(board):
             board.pop()
             return i
-        board.pop()
-
-    bestMove = legalMoves[0]
-    bestScore = 0
-
-    if depth == 0:
-        return legalMoves[0]
-
-    for i in legalMoves:
-        board.push_san(i)
         board.push_san(getBestMove(board, depth - 1, ("White" if color == "Black" else "Black")))
         score = evaluate(board)
         board.pop()
@@ -119,7 +114,7 @@ def getAiMove(board):
             return i
         board.pop()
 
-    return getBestMove(board, 6, player)
+    return getBestMove(board, 4, player)
 
 def game():
     # make decapawn game
