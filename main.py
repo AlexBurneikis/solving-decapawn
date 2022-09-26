@@ -62,11 +62,9 @@ def evaluate(board):
         return -100
 
     for i in board.pieces(chess.PAWN, chess.WHITE):
-        #score += (1/(4 - chess.square_rank(i)))
         score += 1
 
     for i in board.pieces(chess.PAWN, chess.BLACK):
-        #score -= (1/(chess.square_rank(i)))
         score -= 1
 
     return score
