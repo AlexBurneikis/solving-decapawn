@@ -48,7 +48,7 @@ def generateLegalMoves(board):
         legalMoves.remove(i)
 
     #randomize legalMoves
-    #random.shuffle(legalMoves)
+    random.shuffle(legalMoves)
 
     return legalMoves  
 
