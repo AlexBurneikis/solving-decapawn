@@ -48,7 +48,7 @@ def generateLegalMoves(board):
         legalMoves.remove(i)
 
     #randomize legalMoves
-    random.shuffle(legalMoves)
+    #random.shuffle(legalMoves)
 
     return legalMoves  
 
@@ -70,7 +70,7 @@ def evaluate(board):
 
     return score
 
-def getBestMove(board, depth, color):
+def getBestMove(board, depth, color, calculatedBoards, calculatedScores):
     legalMoves = generateLegalMoves(board)
 
     #guard statement if reach max depth
@@ -87,15 +87,16 @@ def getBestMove(board, depth, color):
             board.pop()
             return i
 
-        #look deeper
-        board.push_san(getBestMove(board, depth - 1, not color))
-        score = evaluate(board)
+        lookedDeeper = False
+        if board.fen() in calculatedBoards:
+            index = calculatedBoards.index(board.fen())
+            score = calculatedScores[index]
+        else:
+            #look deeper
+            board.push_san(getBestMove(board, depth - 1, not color, calculatedBoards, calculatedScores))
+            score = evaluate(board)
+            lookedDeeper = True
 
-        #go back to previous state
-        board.pop()
-        board.pop()
-
-        #see if this move is better than the previous best move
         if color:
             if score > bestScore:
                 bestScore = score
@@ -104,6 +105,16 @@ def getBestMove(board, depth, color):
             if score < bestScore:
                 bestScore = score
                 bestMove = i
+
+        calculatedBoards.append(board.fen())
+        calculatedScores.append(score)
+
+        #go back to previous state
+        if lookedDeeper:
+            board.pop()
+        board.pop()
+
+        #see if this move is better than the previous best move
 
     return bestMove
 
@@ -118,7 +129,10 @@ def game():
         print(board)
         print(("White" if board.turn else "Black") + " to play.")
 
-        board.push_san(getBestMove(board, 7, board.turn))
+        calculatedBoards = []
+        calculatedScores = []
+
+        board.push_san(getBestMove(board, 6, board.turn, calculatedBoards, calculatedScores))
 
         moves.append(str(board.peek()))
 
