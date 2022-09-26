@@ -1,5 +1,4 @@
 import random
-from tabnanny import check
 import chess
 
 
@@ -114,7 +113,7 @@ def getAiMove(board):
             return i
         board.pop()
 
-    return getBestMove(board, 4, player)
+    return getBestMove(board, 8, player)
 
 def game():
     # make decapawn game
