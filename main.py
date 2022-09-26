@@ -1,28 +1,31 @@
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-function-docstring
+
 import random
 import chess
 
-def isWin(board):
+def is_win(board):
     # check if a pawn has reached the opposite rank
     for i in ["a", "b", "c", "d", "e"]:
         square = chess.parse_square(f'{i}1')
 
-        if board.piece_at(square) == None:
+        if board.piece_at(square) is None:
             continue
 
         if board.piece_at(square).color == chess.BLACK:
             winner = "Black"
-            
+           
             return winner
 
     for i in ["a", "b", "c", "d", "e"]:
         square = chess.parse_square(f'{i}5')
 
-        if board.piece_at(square) == None:
+        if board.piece_at(square) is None:
             continue
 
         if board.piece_at(square).color == chess.WHITE:
             winner = "White"
-            
+          
             return winner
 
     if board.is_stalemate():
@@ -35,90 +38,86 @@ def isWin(board):
 
     return False
 
-def generateLegalMoves(board):
-    legalMoves = [str(i) for i in board.legal_moves]
+def get_legal_moves(board):
+    legal_moves = [str(i) for i in board.legal_moves]
     
-    toRemove = []
-    for i in legalMoves:
+    to_remove = []
+    for i in legal_moves:
         if (int(i[3]) - int(i[1])) == 2:
-            toRemove.append(i)
+            to_remove.append(i)
 
-    for i in toRemove:
-        legalMoves.remove(i)
+    for i in to_remove:
+        legal_moves.remove(i)
 
     #randomize legalMoves
-    random.shuffle(legalMoves)
+    random.shuffle(legal_moves)
 
-    return legalMoves  
+    return legal_moves
 
 def evaluate(board):
     #score is number of white pawns - number of black pawns
     score = 0
     
-    if isWin(board) == "White":
+    if is_win(board) == "White":
         score += 10
 
-    if isWin(board) == "Black":
+    if is_win(board) == "Black":
         score -= 10
 
-    for i in board.pieces(chess.PAWN, chess.WHITE):
-        score += 1
+    score += len(board.pieces(chess.PAWN, chess.WHITE))
 
-    for i in board.pieces(chess.PAWN, chess.BLACK):
-        score -= 1
+    score -= len(board.pieces(chess.PAWN, chess.BLACK))
 
-    for i in generateLegalMoves(board):
-        if board.turn:
-            score += 0.1
-        else:
-            score -= 0.1
+    score += (0.2 if board.turn else -0.2) * len(get_legal_moves(board))
 
     return score
 
-def max(score, bestScore):
-    if score > bestScore:
-        return score
-    return bestScore
-
-def min(score, bestScore):
-    if score < bestScore:
-        return score
-    return bestScore
-
-def minimax(board, depth, alpha, beta, maxPlayer):
-    if depth == 0 or isWin(board):
+def minimax(board, depth: int, alpha, beta, max_player):
+    if depth == 0 or is_win(board):
         return evaluate(board), board
 
-    if maxPlayer:
-        maxEval = float('-inf')
+    if max_player:
+        max_eval = float('-inf')
         best_move = None
-        for move in generateLegalMoves(board):
+        for move in get_legal_moves(board):
+
+            #push the move and evaluate it
             board.push_san(move)
             evaluation = minimax(board, depth - 1, alpha, beta, False)[0]
+            #un-push
             board.pop()
-            maxEval = max(maxEval, evaluation)
+
+            max_eval = max(max_eval, evaluation)
+            if max_eval == evaluation:
+                best_move = move
+
+            #pruning
             alpha = max(alpha, evaluation)
-            if maxEval == evaluation:
-                best_move = move
             if beta <= alpha:
                 break
             
-        return maxEval, best_move
-    else:
-        minEval = float('inf')
-        best_move = None
-        for move in generateLegalMoves(board):
-            board.push_san(move)
-            evaluation = minimax(board, depth - 1, alpha, beta, True)[0]
-            board.pop()
-            minEval = min(minEval, evaluation)
-            beta = min(beta, evaluation)
-            if minEval == evaluation:
-                best_move = move
-            if beta <= alpha:
-                break
+        return max_eval, best_move
+
+    min_eval = float('inf')
+    best_move = None
+    for move in get_legal_moves(board):
+
+        #push the move and evaluate it
+        board.push_san(move)
+        evaluation = minimax(board, depth - 1, alpha, beta, True)[0]
+        #un-push
+        board.pop()
+
+        min_eval = min(min_eval, evaluation)
+        if min_eval == evaluation:
+            best_move = move
+
+        #pruning
+        beta = min(beta, evaluation)
+        if beta <= alpha:
+            break
             
-        return minEval, best_move
+    return min_eval, best_move
 
 def game():
     board = chess.Board()
@@ -127,20 +126,22 @@ def game():
 
     moves = []
 
-    while not isWin(board):
+    while not is_win(board):
         print(board)
 
         print(("White" if board.turn else "Black") + " to play.")
         
-        board.push_san(minimax(board, 8, float("-inf"), float("inf"), board.turn)[1])
+        move = minimax(board, 8, float("-inf"), float("inf"), board.turn)[1]
+
+        board.push_san(str(move))
 
         moves.append(str(board.peek()))
 
     #post-game
     print(board)
-    if isWin(board) == "White":
+    if is_win(board) == "White":
         print("White wins")
-    elif isWin(board) == "Black":
+    elif is_win(board) == "Black":
         print("Black wins")
     print(moves)
 
