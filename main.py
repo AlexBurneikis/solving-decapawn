@@ -1,7 +1,6 @@
 import random
 import chess
 
-
 def isWin(board):
     # check if a pawn has reached the opposite rank
     for i in ["a", "b", "c", "d", "e"]:
@@ -63,9 +62,11 @@ def evaluate(board):
         return -100
 
     for i in board.pieces(chess.PAWN, chess.WHITE):
+        #score += (1/(4 - chess.square_rank(i)))
         score += 1
 
     for i in board.pieces(chess.PAWN, chess.BLACK):
+        #score -= (1/(chess.square_rank(i)))
         score -= 1
 
     return score
@@ -127,12 +128,13 @@ def game():
 
     while not isWin(board):
         print(board)
+
         print(("White" if board.turn else "Black") + " to play.")
 
         calculatedBoards = []
         calculatedScores = []
 
-        board.push_san(getBestMove(board, 6, board.turn, calculatedBoards, calculatedScores))
+        board.push_san(getBestMove(board, 7, board.turn, calculatedBoards, calculatedScores))
 
         moves.append(str(board.peek()))
 
