@@ -56,10 +56,10 @@ def evaluate(board):
     score = 0
     
     if isWin(board) == "White":
-        return 100
+        score += 100
 
     if isWin(board) == "Black":
-        return -100
+        score -= 100
 
     for i in board.pieces(chess.PAWN, chess.WHITE):
         score += 1
@@ -92,10 +92,11 @@ def minimax(board, depth, alpha, beta, maxPlayer):
             board.pop()
             maxEval = max(maxEval, evaluation)
             alpha = max(alpha, evaluation)
-            if beta <= alpha:
-                break
             if maxEval == evaluation:
                 best_move = move
+            if beta <= alpha:
+                break
+            
         return maxEval, best_move
     else:
         minEval = float('inf')
@@ -106,10 +107,10 @@ def minimax(board, depth, alpha, beta, maxPlayer):
             board.pop()
             minEval = min(minEval, evaluation)
             beta = min(beta, evaluation)
-            if beta <= alpha:
-                break
             if minEval == evaluation:
                 best_move = move
+            if beta <= alpha:
+                break
             
         return minEval, best_move
 
@@ -125,7 +126,7 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
         
-        board.push_san(minimax(board, 8, float("-inf"), float("inf"), board.turn)[1])
+        board.push_san(minimax(board, 10, float("-inf"), float("inf"), board.turn)[1])
 
         moves.append(str(board.peek()))
 
