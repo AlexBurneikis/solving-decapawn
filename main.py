@@ -5,7 +5,9 @@ import random
 import chess
 
 def is_win(board):
-    # check if a pawn has reached the opposite rank
+    #determine who has won or if no one has
+
+    #check if a pawn has reached the opposite rank
     for i in ["a", "b", "c", "d", "e"]:
         square = chess.parse_square(f'{i}1')
 
@@ -13,9 +15,7 @@ def is_win(board):
             continue
 
         if board.piece_at(square).color == chess.BLACK:
-            winner = "Black"
-
-            return winner
+            return "Black"
 
     for i in ["a", "b", "c", "d", "e"]:
         square = chess.parse_square(f'{i}5')
@@ -24,29 +24,28 @@ def is_win(board):
             continue
 
         if board.piece_at(square).color == chess.WHITE:
-            winner = "White"
+            return "White"
 
-            return winner
-
+    #whoever cant play loses
     if board.is_stalemate():
         if board.turn:
-            winner = "Black"
-        else:
-            winner = "White"
-
-        return winner
+            return "Black"
+        return "White"
 
     return False
 
 def get_legal_moves(board):
+    #get legal moves without pawns moving two spaces
+    #shuffle the legal moves
     legal_moves = [str(i) for i in board.legal_moves]
 
-    #cant allow pawn moving two spaces
+    #get the moves to remove
     to_remove = []
     for i in legal_moves:
         if (int(i[3]) - int(i[1])) == 2:
             to_remove.append(i)
 
+    #remove them
     for i in to_remove:
         legal_moves.remove(i)
 
@@ -56,20 +55,37 @@ def get_legal_moves(board):
     return legal_moves
 
 def evaluate(board):
-    #score is number of white pawns - number of black pawns
+    #score is number of white pawns - number of black pawns + some bonus for mobility
     score = 0
 
     if is_win(board) == "White":
-        score += 10
+        score += 1000000
 
     if is_win(board) == "Black":
-        score -= 10
+        score -= 1000000
 
-    score += len(board.pieces(chess.PAWN, chess.WHITE))
+    # score += len(board.pieces(chess.PAWN, chess.WHITE))
 
-    score -= len(board.pieces(chess.PAWN, chess.BLACK))
+    # score -= len(board.pieces(chess.PAWN, chess.BLACK))
 
-    score += (0.2 if board.turn else -0.2) * len(get_legal_moves(board))
+    # score += (0.2 if board.turn else -0.2) * len(get_legal_moves(board))
+
+    # #get a list of pawns
+    white_pawns = [i for i in board.pieces(chess.PAWN, chess.WHITE)]
+    black_pawns = [i for i in board.pieces(chess.PAWN, chess.BLACK)]
+
+    #get the distance of each pawn from the opposite side
+
+    white_ranks = []
+    for i in white_pawns:
+        white_ranks.append(chess.square_rank(i)^3)
+
+    black_ranks = []
+    for i in black_pawns:
+        black_ranks.append((4 - chess.square_rank(i))^3)
+
+    score += sum(white_ranks)
+    score -= sum(black_ranks)
 
     return score
 
@@ -132,7 +148,7 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = minimax(board, 10, float("-inf"), float("inf"), board.turn)[1]
+        move = minimax(board, 15, float("-inf"), float("inf"), board.turn)[1]
 
         board.push_san(str(move))
 
