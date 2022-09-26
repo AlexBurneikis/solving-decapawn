@@ -55,7 +55,7 @@ def generateLegalMoves(board):
 def evaluate(board):
     #score is number of white pawns - number of black pawns
     score = 0
-
+    
     if isWin(board) == "White":
         return 100
 
@@ -70,7 +70,7 @@ def evaluate(board):
 
     return score
 
-def getBestMove(board, depth, color, calculatedBoards = [], calculatedScores = []):
+def getBestMove(board, depth, color):
     legalMoves = generateLegalMoves(board)
 
     #guard statement if reach max depth
@@ -81,21 +81,18 @@ def getBestMove(board, depth, color, calculatedBoards = [], calculatedScores = [
     bestScore = 0
 
     for i in legalMoves:
-        board.push_san(i)          
+        board.push_san(i)
 
         if isWin(board):
             board.pop()
             return i
 
-        if board.fen() in calculatedBoards:
-            score = calculatedScores[calculatedBoards.index(board.fen())]
-        else:
-            #look deeper
-            board.push_san(getBestMove(board, depth - 1, not color))
-            score = evaluate(board)
+        #look deeper
+        board.push_san(getBestMove(board, depth - 1, not color))
+        score = evaluate(board)
 
-            #go back to previous state
-            board.pop()
+        #go back to previous state
+        board.pop()
         board.pop()
 
         #see if this move is better than the previous best move
@@ -107,9 +104,6 @@ def getBestMove(board, depth, color, calculatedBoards = [], calculatedScores = [
             if score < bestScore:
                 bestScore = score
                 bestMove = i
-
-        calculatedBoards.append(board.fen())
-        calculatedScores.append(bestScore)
 
     return bestMove
 
@@ -124,7 +118,7 @@ def game():
         print(board)
         print(("White" if board.turn else "Black") + " to play.")
 
-        board.push_san(getBestMove(board, 8, board.turn))
+        board.push_san(getBestMove(board, 7, board.turn))
 
         moves.append(str(board.peek()))
 
