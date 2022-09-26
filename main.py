@@ -67,6 +67,12 @@ def evaluate(board):
     for i in board.pieces(chess.PAWN, chess.BLACK):
         score -= 1
 
+    for i in generateLegalMoves(board):
+        if board.turn:
+            score += 0.1
+        else:
+            score -= 0.1
+
     return score
 
 def max(score, bestScore):
@@ -126,7 +132,7 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
         
-        board.push_san(minimax(board, 10, float("-inf"), float("inf"), board.turn)[1])
+        board.push_san(minimax(board, 13, float("-inf"), float("inf"), board.turn)[1])
 
         moves.append(str(board.peek()))
 
