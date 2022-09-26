@@ -91,9 +91,9 @@ def getBestMove(board, depth, color):
 
     for i in legalMoves:
         board.push_san(i)
-        #board.push_san(getBestMove(board, depth - 1, ("White" if color == "Black" else "Black")))
+        board.push_san(getBestMove(board, depth - 1, ("White" if color == "Black" else "Black")))
         score = evaluate(board)
-        #board.pop()
+        board.pop()
         board.pop()
 
         if score >= bestScore and color == "White":
@@ -104,8 +104,6 @@ def getBestMove(board, depth, color):
             bestScore = score
             bestMove = i
 
-    print(color)
-    print(bestScore)
     return bestMove
 
 def getAiMove(board):
@@ -121,7 +119,7 @@ def getAiMove(board):
             return i
         board.pop()
 
-    return getBestMove(board, 3, player)
+    return getBestMove(board, 6, player)
 
 def game():
     # make decapawn game
