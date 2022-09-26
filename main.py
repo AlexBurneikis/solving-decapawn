@@ -14,7 +14,7 @@ def is_win(board):
 
         if board.piece_at(square).color == chess.BLACK:
             winner = "Black"
-           
+
             return winner
 
     for i in ["a", "b", "c", "d", "e"]:
@@ -25,7 +25,7 @@ def is_win(board):
 
         if board.piece_at(square).color == chess.WHITE:
             winner = "White"
-          
+
             return winner
 
     if board.is_stalemate():
@@ -40,7 +40,7 @@ def is_win(board):
 
 def get_legal_moves(board):
     legal_moves = [str(i) for i in board.legal_moves]
-    
+
     to_remove = []
     for i in legal_moves:
         if (int(i[3]) - int(i[1])) == 2:
@@ -57,7 +57,7 @@ def get_legal_moves(board):
 def evaluate(board):
     #score is number of white pawns - number of black pawns
     score = 0
-    
+
     if is_win(board) == "White":
         score += 10
 
@@ -95,7 +95,7 @@ def minimax(board, depth: int, alpha, beta, max_player):
             alpha = max(alpha, evaluation)
             if beta <= alpha:
                 break
-            
+
         return max_eval, best_move
 
     min_eval = float('inf')
@@ -116,7 +116,7 @@ def minimax(board, depth: int, alpha, beta, max_player):
         beta = min(beta, evaluation)
         if beta <= alpha:
             break
-            
+
     return min_eval, best_move
 
 def game():
@@ -130,7 +130,7 @@ def game():
         print(board)
 
         print(("White" if board.turn else "Black") + " to play.")
-        
+
         move = minimax(board, 8, float("-inf"), float("inf"), board.turn)[1]
 
         board.push_san(str(move))
