@@ -56,10 +56,10 @@ def evaluate(board):
     score = 0
     
     if isWin(board) == "White":
-        score += 100
+        score += 10
 
     if isWin(board) == "Black":
-        score -= 100
+        score -= 10
 
     for i in board.pieces(chess.PAWN, chess.WHITE):
         score += 1
@@ -132,7 +132,7 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
         
-        board.push_san(minimax(board, 13, float("-inf"), float("inf"), board.turn)[1])
+        board.push_san(minimax(board, 8, float("-inf"), float("inf"), board.turn)[1])
 
         moves.append(str(board.peek()))
 
