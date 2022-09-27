@@ -96,30 +96,28 @@ def get_move(board, depth):
     #for all the legalMoves return the one with best minimax score
 
     best_move = get_legal_moves(board)[0]
-    if board.turn:
-        best_score = -10
-    else: 
-        best_score = 10
+
+    best_score = -10
 
     for move in get_legal_moves(board):
         board.push_san(move)
         score = minimax(board, depth, -10, 10, False)
         board.pop()
 
-        if board.turn:
-            if score > best_score:
-                best_score = score
-                best_move = move
-        else:
-            if score < best_score:
-                best_score = score
-                best_move = move
+        if abs(score) > best_score:
+            best_score = score
+            best_move = move
 
     return best_score, best_move
 
-def get_player_move(board):
+def get_player_move(board, depth):
     while True:
         move = input("Enter a move: ")
+
+        #if player wants puter to play instead
+        if move == "":
+            return get_move(board, depth)
+
         try:
             move = str(board.parse_san(move))
         except ValueError:
@@ -148,12 +146,7 @@ def game(depth):
         print(board)
         print(("White" if board.turn else "Black") + " to play.")
 
-        # if board.turn:
-        #     move = get_player_move(board)
-        # else:
-        #     move = get_move(board, 12)
-
-        move = get_move(board, depth)
+        move = get_player_move(board, depth)
 
         print(move[0])
         board.push_san(str(move[1]))
@@ -172,15 +165,17 @@ def game(depth):
 
     return is_win(board)
 
-white_wins = 0
-black_wins = 0
+# white_wins = 0
+# black_wins = 0
 
-DEPTH = 8
+DEPTH = 12
 
-while True:
-    if game(DEPTH) == "White":
-        white_wins += 1
-    else:
-        black_wins += 1
-    print(f"White wins: {white_wins}")
-    print(f"Black wins: {black_wins}")
+# while True:
+#     if game(DEPTH) == "White":
+#         white_wins += 1
+#     else:
+#         black_wins += 1
+#     print(f"White wins: {white_wins}")
+#     print(f"Black wins: {black_wins}")
+
+game(DEPTH)
