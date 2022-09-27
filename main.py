@@ -76,7 +76,7 @@ def minimax(board, depth, alpha, beta, max_player):
             evaluation = minimax(board, depth - 1, alpha, beta, False)
             board.pop()
             max_eval = max(max_eval, evaluation)
-            if beta <= alpha:
+            if max_eval >= beta:
                 break
             alpha = max(alpha, evaluation)
         return max_eval
@@ -87,7 +87,7 @@ def minimax(board, depth, alpha, beta, max_player):
         evaluation = minimax(board, depth - 1, alpha, beta, True)
         board.pop()
         min_eval = min(min_eval, evaluation)
-        if beta <= alpha:
+        if min_eval <= alpha:
             break
         beta = min(beta, evaluation)
     return min_eval
@@ -159,7 +159,7 @@ def game(depth):
 white_wins = 0
 black_wins = 0
 
-DEPTH = 20
+DEPTH = 12
 
 while True:
     if game(DEPTH) == "White":
