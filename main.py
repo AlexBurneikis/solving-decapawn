@@ -74,6 +74,7 @@ def evaluate(board):
     # black_pawns = [i for i in board.pieces(chess.PAWN, chess.BLACK)]
 
     # #get the distance of each pawn from the opposite side
+<<<<<<< HEAD
 
     # white_ranks = []
     # for i in white_pawns:
@@ -83,6 +84,16 @@ def evaluate(board):
     # for i in black_pawns:
     #     black_ranks.append((4 - chess.square_rank(i))^2)
 
+=======
+    # white_ranks = []
+    # for i in white_pawns:
+    #     white_ranks.append(chess.square_rank(i)^2)
+
+    # black_ranks = []
+    # for i in black_pawns:
+    #     black_ranks.append((4 - chess.square_rank(i))^2)
+
+>>>>>>> a9286166fb0655d0477a8975c7085cb08cbe6c8a
     # score += sum(white_ranks)
     # score -= sum(black_ranks)
 
@@ -109,8 +120,8 @@ def minimax(board, depth: int, alpha, beta, max_player):
 
             #pruning
             alpha = max(alpha, evaluation)
-            if beta <= alpha:
-                break
+            #if beta <= alpha:
+                #break
 
         return max_eval, best_move
 
@@ -130,8 +141,8 @@ def minimax(board, depth: int, alpha, beta, max_player):
 
         #pruning
         beta = min(beta, evaluation)
-        if beta <= alpha:
-            break
+        #if beta <= alpha:
+            #break
 
     return min_eval, best_move
 
@@ -147,10 +158,17 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
 
+<<<<<<< HEAD
         move = minimax(board, 24, float("-inf"), float("inf"), board.turn)
 
         print(move[0])
 
+=======
+        move = minimax(board, 6, float("-inf"), float("inf"), board.turn)
+
+        print(move[0])
+
+>>>>>>> a9286166fb0655d0477a8975c7085cb08cbe6c8a
         board.push_san(str(move[1]))
 
         moves.append(str(board.peek()))
