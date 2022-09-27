@@ -120,15 +120,17 @@ def game():
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
 
     moves = []
+    evals = []
 
     while not is_win(board):
         print(board)
 
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = minimax(board, 8, float("-inf"), float("inf"), board.turn)
+        move = minimax(board, 12, float("-inf"), float("inf"), board.turn)
 
         print(move[0])
+        evals.append(move[0])
 
         board.push_san(str(move[1]))
 
@@ -141,5 +143,6 @@ def game():
     elif is_win(board) == "Black":
         print("Black wins")
     print(moves)
+    print(evals)
 
 game()
