@@ -168,7 +168,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 12
+DEPTH = 15
 
 # while True:
 #     if game(DEPTH) == "White":
