@@ -70,7 +70,7 @@ def minimax(board, depth, alpha, beta, max_player):
         return evaluate(board)
 
     if max_player:
-        max_eval = float('-inf')
+        max_eval = -10
         for move in get_legal_moves(board):
             board.push_san(move)
             evaluation = minimax(board, depth - 1, alpha, beta, False)
@@ -81,7 +81,7 @@ def minimax(board, depth, alpha, beta, max_player):
             alpha = max(alpha, evaluation)
         return max_eval
 
-    min_eval = float('inf')
+    min_eval = 10
     for move in get_legal_moves(board):
         board.push_san(move)
         evaluation = minimax(board, depth - 1, alpha, beta, True)
@@ -93,37 +93,24 @@ def minimax(board, depth, alpha, beta, max_player):
     return min_eval
 
 def get_move(board, depth):
-    #for all the legalMoves return the one with best minimax
-
-    get_legal_moves(board)
+    #for all the legalMoves return the one with best minimax score
 
     best_move = get_legal_moves(board)[0]
-
-    if board.turn:
-        best_score = float('-inf')
-    else:
-        best_score = float('inf')
+    best_score = -10
 
     for move in get_legal_moves(board):
         board.push_san(move)
         score = minimax(board, depth, -10, 10, False)
         board.pop()
 
-        if board.turn:
-            if score > best_score:
-                best_score = score
-                best_move = move
-
-        else:
-            if score < best_score:
-                best_score = score
-                best_move = move
+        if abs(score) > best_score:
+            best_score = score
+            best_move = move
 
     return best_score, best_move
 
 def game():
     board = chess.Board()
-
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
 
     moves = []
@@ -131,17 +118,15 @@ def game():
 
     while not is_win(board):
         print(board)
-
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = get_move(board, 8)
-
+        move = get_move(board, 15)
+        
         print(move[0])
-        evals.append(move[0])
-
         board.push_san(str(move[1]))
 
         moves.append(str(board.peek()))
+        evals.append(move[0])
 
     #post-game info
     print(board)
