@@ -121,7 +121,7 @@ def get_player_move(board):
             return 0, move
         print("Invalid move")
 
-def game():
+def game(depth):
     board = chess.Board()
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
 
@@ -137,7 +137,7 @@ def game():
         # else:
         #     move = get_move(board, 12)
 
-        move = get_move(board, 20)
+        move = get_move(board, depth)
 
         print(move[0])
         board.push_san(str(move[1]))
@@ -154,4 +154,17 @@ def game():
     print(moves)
     print(evals)
 
-game()
+    return is_win(board)
+
+white_wins = 0
+black_wins = 0
+
+DEPTH = 20
+
+while True:
+    if game(DEPTH) == "White":
+        white_wins += 1
+    else:
+        black_wins += 1
+    print(f"White wins: {white_wins}")
+    print(f"Black wins: {black_wins}")
