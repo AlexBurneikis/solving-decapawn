@@ -63,29 +63,6 @@ def evaluate(board):
     if is_win(board) == "Black":
         score -= 1
 
-    # score += len(board.pieces(chess.PAWN, chess.WHITE))
-
-    # score -= len(board.pieces(chess.PAWN, chess.BLACK))
-
-    # score += (0.2 if board.turn else -0.2) * len(get_legal_moves(board))
-
-    # #get a list of pawns
-    # white_pawns = [i for i in board.pieces(chess.PAWN, chess.WHITE)]
-    # black_pawns = [i for i in board.pieces(chess.PAWN, chess.BLACK)]
-
-    # #get the distance of each pawn from the opposite side
-
-    # white_ranks = []
-    # for i in white_pawns:
-    #     white_ranks.append(chess.square_rank(i)^2)
-
-    # black_ranks = []
-    # for i in black_pawns:
-    #     black_ranks.append((4 - chess.square_rank(i))^2)
-
-    # score += sum(white_ranks)
-    # score -= sum(black_ranks)
-
     return score
 
 def minimax(board, depth: int, alpha, beta, max_player):
