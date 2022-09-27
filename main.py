@@ -76,9 +76,9 @@ def minimax(board, depth, alpha, beta, max_player):
             evaluation = minimax(board, depth - 1, alpha, beta, False)
             board.pop()
             max_eval = max(max_eval, evaluation)
-            alpha = max(alpha, evaluation)
             if beta <= alpha:
                 break
+            alpha = max(alpha, evaluation)
         return max_eval
 
     min_eval = float('inf')
@@ -87,80 +87,39 @@ def minimax(board, depth, alpha, beta, max_player):
         evaluation = minimax(board, depth - 1, alpha, beta, True)
         board.pop()
         min_eval = min(min_eval, evaluation)
-        beta = min(beta, evaluation)
         if beta <= alpha:
             break
+        beta = min(beta, evaluation)
     return min_eval
 
 def get_move(board, depth):
-    #for all the legalMoves get the one with best minimax
-    #return the best move
+    #for all the legalMoves return the one with best minimax
 
-    legalMoves = get_legal_moves(board)
+    get_legal_moves(board)
 
-    bestMove = legalMoves[0]
+    best_move = get_legal_moves(board)[0]
 
-    bestScore = float('-inf')
+    if board.turn:
+        best_score = float('-inf')
+    else:
+        best_score = float('inf')
 
-    for move in legalMoves:
+    for move in get_legal_moves(board):
         board.push_san(move)
-        score = minimax(board, depth, float('-inf'), float('inf'), False)
+        score = minimax(board, depth, -10, 10, False)
         board.pop()
 
-        if abs(score) > bestScore:
-            bestScore = score
-            bestMove = move
-
-    return bestScore, bestMove
-
-def minimax_chess(board, depth: int, alpha, beta, max_player):
-    if depth == 0 or is_win(board):
-        return evaluate(board), board
-
-    if max_player:
-        max_eval = float('-inf')
-        best_move = None
-        for move in get_legal_moves(board):
-
-            #push the move and evaluate it
-            board.push_san(move)
-            evaluation = minimax_chess(board, depth - 1, alpha, beta, False)[0]
-            #un-push
-            board.pop()
-
-            max_eval = max(max_eval, evaluation)
-            if max_eval == evaluation:
+        if board.turn:
+            if score > best_score:
+                best_score = score
                 best_move = move
 
-            #pruning
-            if beta <= alpha:
-                break
+        else:
+            if score < best_score:
+                best_score = score
+                best_move = move
 
-            alpha = max(alpha, evaluation)
-
-        return max_eval, best_move
-
-    min_eval = float('inf')
-    best_move = None
-    for move in get_legal_moves(board):
-
-        #push the move and evaluate it
-        board.push_san(move)
-        evaluation = minimax_chess(board, depth - 1, alpha, beta, True)[0]
-        #un-push
-        board.pop()
-
-        min_eval = min(min_eval, evaluation)
-        if min_eval == evaluation:
-            best_move = move
-
-        #pruning
-        if beta <= alpha:
-            break
-
-        beta = min(beta, evaluation)
-
-    return min_eval, best_move
+    return best_score, best_move
 
 def game():
     board = chess.Board()
@@ -175,7 +134,7 @@ def game():
 
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = get_move(board, 10)
+        move = get_move(board, 8)
 
         print(move[0])
         evals.append(move[0])
