@@ -109,6 +109,18 @@ def get_move(board, depth):
 
     return best_score, best_move
 
+def get_player_move(board):
+    while True:
+        move = input("Enter a move: ")
+        try:
+            move = str(board.parse_san(move))
+        except ValueError:
+            print("Invalid move")
+            continue
+        if move in get_legal_moves(board):
+            return 0, move
+        print("Invalid move")
+
 def game():
     board = chess.Board()
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
@@ -120,8 +132,13 @@ def game():
         print(board)
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = get_move(board, 15)
-        
+        # if board.turn:
+        #     move = get_player_move(board)
+        # else:
+        #     move = get_move(board, 12)
+
+        move = get_move(board, 20)
+
         print(move[0])
         board.push_san(str(move[1]))
 
