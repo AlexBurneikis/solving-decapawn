@@ -111,9 +111,6 @@ def get_move(board, depth):
             best_score = score
             best_move = move
 
-    if not board.turn:
-        best_score *= -1
-
     return best_score, best_move
 
 def get_player_move(board, depth):
