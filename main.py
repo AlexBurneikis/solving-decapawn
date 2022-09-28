@@ -127,8 +127,7 @@ def get_player_move(board, depth):
                 confirm = input("Enter to confirm, anything else to cancel: ")
                 if confirm == "":
                     return move
-                else:
-                    break
+                break
 
         try:
             move = str(board.parse_san(move))
