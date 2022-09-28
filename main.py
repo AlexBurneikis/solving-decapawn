@@ -112,6 +112,10 @@ def get_move(board, depth):
             best_score = score
             best_move = move
 
+        #if we only want to play the best move and not calculate others then we break here
+        if best_score == 1:
+            break
+
         #convert score back to white's perspective
         if not board.turn:
             score *= -1
@@ -186,7 +190,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 16
+DEPTH = 10
 
 # while True:
 #     if game(DEPTH) == "White":
