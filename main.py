@@ -101,6 +101,7 @@ def get_move(board, depth):
 
     for move in get_legal_moves(board):
         board.push_san(move)
+        #board.turn is now the opposite of what it was as the move has been made (otherwise i would pass (not board.turn))
         score = minimax(board, depth, -10, 10, board.turn)
         board.pop()
 
@@ -179,7 +180,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 15
+DEPTH = 8
 
 # while True:
 #     if game(DEPTH) == "White":
