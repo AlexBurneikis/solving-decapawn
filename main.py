@@ -104,9 +104,15 @@ def get_move(board, depth):
         score = minimax(board, depth, -10, 10, False)
         board.pop()
 
-        if abs(score) > best_score:
+        if not board.turn:
+            score *= -1
+
+        if score > best_score:
             best_score = score
             best_move = move
+
+    if not board.turn:
+        best_score *= -1
 
     return best_score, best_move
 
@@ -130,14 +136,6 @@ def get_player_move(board, depth):
 def game(depth):
     board = chess.Board()
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
-
-    #generate zobrist keys
-    zobrist_keys = {}
-
-    for i in range(0, 64):
-        zobrist_keys[i] = {}
-        for j in range(0, 12):
-            zobrist_keys[i][j] = random.getrandbits(64)
 
     moves = []
     evals = []
@@ -168,7 +166,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 15
+DEPTH = 10
 
 # while True:
 #     if game(DEPTH) == "White":
