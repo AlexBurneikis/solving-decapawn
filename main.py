@@ -2,6 +2,7 @@
 # pylint: disable=missing-function-docstring
 
 import random
+import math
 import chess
 
 def is_win(board):
@@ -54,26 +55,26 @@ def get_legal_moves(board):
 
     return legal_moves
 
-def evaluate(board):
+def evaluate(board, depth):
     score = 0
 
     if is_win(board) == "White":
-        score += 1
+        score += math.floor(100/(depth + 1))
 
     if is_win(board) == "Black":
-        score -= 1
+        score -= math.floor(100/(depth + 1))
 
     return score
 
-def minimax(board, depth, alpha, beta, max_player):
+def minimax(board, depth, alpha, beta, max_player, howDeep):
     if depth == 0 or is_win(board):
-        return evaluate(board)
+        return evaluate(board, howDeep + 1)
 
     if max_player:
         max_eval = -10
         for move in get_legal_moves(board):
             board.push_san(move)
-            evaluation = minimax(board, depth - 1, alpha, beta, False)
+            evaluation = minimax(board, depth - 1, alpha, beta, False, howDeep + 1)
             board.pop()
             max_eval = max(max_eval, evaluation)
             if max_eval >= beta:
@@ -84,7 +85,7 @@ def minimax(board, depth, alpha, beta, max_player):
     min_eval = 10
     for move in get_legal_moves(board):
         board.push_san(move)
-        evaluation = minimax(board, depth - 1, alpha, beta, True)
+        evaluation = minimax(board, depth - 1, alpha, beta, True, howDeep + 1)
         board.pop()
         min_eval = min(min_eval, evaluation)
         if min_eval <= alpha:
@@ -102,7 +103,7 @@ def get_move(board, depth):
     for move in get_legal_moves(board):
         board.push_san(move)
         #board.turn is now the opposite of what it was as the move has been made (otherwise i would pass (not board.turn))
-        score = minimax(board, depth, -10, 10, board.turn)
+        score = minimax(board, depth, -10, 10, board.turn, 0)
         board.pop()
 
         if not board.turn:
@@ -113,8 +114,8 @@ def get_move(board, depth):
             best_move = move
 
         #if we only want to play the best move and not calculate others then we break here
-        if best_score == 1:
-            break
+        # if best_score == 1:
+        #     break
 
         #convert score back to white's perspective
         if not board.turn:
