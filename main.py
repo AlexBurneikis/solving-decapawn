@@ -101,7 +101,7 @@ def get_move(board, depth):
 
     for move in get_legal_moves(board):
         board.push_san(move)
-        score = minimax(board, depth, -10, 10, False)
+        score = minimax(board, depth, -10, 10, board.turn)
         board.pop()
 
         if not board.turn:
@@ -110,6 +110,10 @@ def get_move(board, depth):
         if score > best_score:
             best_score = score
             best_move = move
+
+    #convert score back to white's perspective
+    if not board.turn:
+        best_score *= -1
 
     return best_score, best_move
 
@@ -175,7 +179,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 10
+DEPTH = 15
 
 # while True:
 #     if game(DEPTH) == "White":
