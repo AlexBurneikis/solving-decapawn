@@ -112,6 +112,12 @@ def get_move(board, depth):
             best_score = score
             best_move = move
 
+        #convert score back to white's perspective
+        if not board.turn:
+            score *= -1
+
+        print(f"{move}: {score}")
+
     #convert score back to white's perspective
     if not board.turn:
         best_score *= -1
@@ -156,11 +162,11 @@ def game(depth):
         print(board)
         print(("White" if board.turn else "Black") + " to play.")
 
-        move = get_player_move(board, depth)
+        #move = get_player_move(board, depth)
 
-        #move = get_move(board, depth)
+        move = get_move(board, depth)
 
-        print(move[0])
+        print(f'Best move: {move}')
         board.push_san(str(move[1]))
 
         moves.append(str(board.peek()))
@@ -180,7 +186,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 8
+DEPTH = 16
 
 # while True:
 #     if game(DEPTH) == "White":
