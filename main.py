@@ -119,12 +119,23 @@ def get_player_move(board, depth):
 
         #if player wants puter to play instead
         if move == "":
-            return get_move(board, depth)
+            move = get_move(board, depth)
+            print(move)
+            
+            #get confirmation from user
+            while True:
+                confirm = input("Enter to confirm, anything else to cancel: ")
+                if confirm == "":
+                    return move
+                else:
+                    break
 
         try:
             move = str(board.parse_san(move))
         except ValueError:
             print("Invalid move")
+            continue
+        except TypeError:
             continue
         if move in get_legal_moves(board):
             return 0, move
@@ -142,6 +153,8 @@ def game(depth):
         print(("White" if board.turn else "Black") + " to play.")
 
         move = get_player_move(board, depth)
+
+        #move = get_move(board, depth)
 
         print(move[0])
         board.push_san(str(move[1]))
