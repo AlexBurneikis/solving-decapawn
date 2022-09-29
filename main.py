@@ -148,10 +148,14 @@ def get_move(board, depth):
 
  # Wait for all of them to finish
     for t in threads:
-        moves.append(t.join())
-    
+        moves.append(t.join())    
+
     #get the best move
     for move in moves:
+        
+        if not board.turn:
+            move[0] *= -1
+
         if move[0] > best_score:
             best_score = move[0]
             best_move = move[1]
