@@ -59,10 +59,10 @@ def evaluate(board, depth):
     score = 0
 
     if is_win(board) == "White":
-        score += math.floor(100/(depth + 1))
+        score += math.floor(100/(depth))
 
     if is_win(board) == "Black":
-        score -= math.floor(100/(depth + 1))
+        score -= math.floor(100/(depth))
 
     return score
 
@@ -112,10 +112,6 @@ def get_move(board, depth):
         if score > best_score:
             best_score = score
             best_move = move
-
-        #if we only want to play the best move and not calculate others then we break here
-        # if best_score == 1:
-        #     break
 
         #convert score back to white's perspective
         if not board.turn:
