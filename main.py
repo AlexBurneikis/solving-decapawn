@@ -5,6 +5,9 @@ import random
 import math
 import chess
 
+#we going crazy now
+from threading import Thread
+
 def is_win(board):
     #determine who has won or if no one has
 
@@ -97,6 +100,30 @@ def minimax(board, depth, alpha, beta, max_player, howDeep):
 
     return min_eval
 
+def thread_function(board, move, depth):
+    board.push_san(move)
+    score = minimax(board, depth, -10, 10, False, 0)
+    board.pop()
+
+    if not board.turn:
+        score *= -1
+        
+    print(f"{move}: {score}")
+    return [score, move]
+
+class ThreadWithReturnValue(Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args,
+                                                **self._kwargs)
+    def join(self, *args):
+        Thread.join(self, *args)
+        return self._return
+
 def get_move(board, depth):
     #for all the legalMoves return the one with best minimax score
 
@@ -104,28 +131,30 @@ def get_move(board, depth):
 
     best_score = -10
 
+    moves = []
+
+    threads = []
+
     for move in get_legal_moves(board):
-        board.push_san(move)
-        #board.turn is now the opposite of what it was as the move has been made (otherwise i would pass (not board.turn))
-        score = minimax(board, depth, -10, 10, board.turn, 0)
-        board.pop()
+        #make a copy of the board
+        board_copy = board.copy()
+        #make a thread for each move
+        t = ThreadWithReturnValue(target=thread_function, args=(board_copy, move, depth))
 
-        if not board.turn:
-            score *= -1
+        threads.append(t)
 
-        if score > best_score:
-            best_score = score
-            best_move = move
+    for t in threads:
+        t.start()
 
-        #convert score back to white's perspective
-        if not board.turn:
-            score *= -1
-        
-        print(f"{move}: {score}")
-
-    #convert score back to white's perspective
-    if not board.turn:
-        best_score *= -1
+ # Wait for all of them to finish
+    for t in threads:
+        moves.append(t.join())
+    
+    #get the best move
+    for move in moves:
+        if move[0] > best_score:
+            best_score = move[0]
+            best_move = move[1]
 
     return best_score, best_move
 
@@ -192,7 +221,7 @@ def game(depth):
 # black_wins = 0
 
 #Game is solved for every opening move at depth = 20
-DEPTH = 12
+DEPTH = 10
 
 # while True:
 #     if game(DEPTH) == "White":
