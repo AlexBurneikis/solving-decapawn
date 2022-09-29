@@ -80,18 +80,21 @@ def minimax(board, depth, alpha, beta, max_player, howDeep):
             if max_eval >= beta:
                 break
             alpha = max(alpha, evaluation)
-        return max_eval
+        eval = max_eval
 
-    min_eval = 10
-    for move in get_legal_moves(board):
-        board.push_san(move)
-        evaluation = minimax(board, depth - 1, alpha, beta, True, howDeep + 1)
-        board.pop()
-        min_eval = min(min_eval, evaluation)
-        if min_eval <= alpha:
-            break
-        beta = min(beta, evaluation)
-    return min_eval
+    else: 
+        min_eval = 10
+        for move in get_legal_moves(board):
+            board.push_san(move)
+            evaluation = minimax(board, depth - 1, alpha, beta, True, howDeep + 1)
+            board.pop()
+            min_eval = min(min_eval, evaluation)
+            if min_eval <= alpha:
+                break
+            beta = min(beta, evaluation)
+        eval = min_eval
+
+    return eval
 
 def get_move(board, depth):
     #for all the legalMoves return the one with best minimax score
