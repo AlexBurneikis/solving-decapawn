@@ -104,11 +104,9 @@ def thread_function(board, move, depth):
     board.push_san(move)
     score = minimax(board, depth, -10, 10, False, 0)
     board.pop()
-
-    if not board.turn:
-        score *= -1
         
     print(f"{move}: {score}")
+
     return [score, move]
 
 class ThreadWithReturnValue(Thread):
@@ -152,13 +150,17 @@ def get_move(board, depth):
 
     #get the best move
     for move in moves:
-        
-        if not board.turn:
-            move[0] *= -1
+        score = move[0]
 
-        if move[0] > best_score:
-            best_score = move[0]
+        if not board.turn:
+            score *= -1
+
+        if score > best_score:
+            best_score = score
             best_move = move[1]
+
+    if not board.turn:
+        best_score *= -1
 
     return best_score, best_move
 
