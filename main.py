@@ -8,6 +8,19 @@ import chess
 #we going crazy now
 from threading import Thread
 
+class ThreadWithReturnValue(Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args,
+                                                **self._kwargs)
+    def join(self, *args):
+        Thread.join(self, *args)
+        return self._return
+
 def is_win(board):
     #determine who has won or if no one has
 
@@ -102,35 +115,21 @@ def minimax(board, depth, alpha, beta, max_player, howDeep):
 
 def thread_function(board, move, depth):
     board.push_san(move)
-    score = minimax(board, depth, -10, 10, False, 0)
+    score = minimax(board, depth, -10, 10, board.turn, 0)
     board.pop()
         
     print(f"{move}: {score}")
 
     return [score, move]
 
-class ThreadWithReturnValue(Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs={}, Verbose=None):
-        Thread.__init__(self, group, target, name, args, kwargs)
-        self._return = None
-    def run(self):
-        if self._target is not None:
-            self._return = self._target(*self._args,
-                                                **self._kwargs)
-    def join(self, *args):
-        Thread.join(self, *args)
-        return self._return
 
 def get_move(board, depth):
     #for all the legalMoves return the one with best minimax score
 
     best_move = get_legal_moves(board)[0]
-
     best_score = -10
 
     moves = []
-
     threads = []
 
     for move in get_legal_moves(board):
