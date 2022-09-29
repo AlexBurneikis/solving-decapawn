@@ -70,6 +70,8 @@ def minimax(board, depth, alpha, beta, max_player, howDeep, storedBoards = [], s
     if depth == 0 or is_win(board):
         return evaluate(board, howDeep + 1)
 
+    storedBoards = []
+
     #if the fen is in the stored Boards, return the score
     # if board.fen() in storedBoards:
     #     return storedScores[storedBoards.index(board.fen())]
@@ -78,11 +80,15 @@ def minimax(board, depth, alpha, beta, max_player, howDeep, storedBoards = [], s
         max_eval = -10
         for move in get_legal_moves(board):
             board.push_san(move)
+
+            if board.fen() in storedBoards:
+                continue
+
             evaluation = minimax(board, depth - 1, alpha, beta, False, howDeep + 1)
 
-            # if evaluation != 0:
-            #     #save the board.fen() and eval to transposition table
-            #     storedBoards.append(board.fen())
+            if evaluation != 0:
+                #save the board.fen() and eval to storedBoards
+                storedBoards.append(board.fen())
             #     storedScores.append(evaluation)
 
             board.pop()
@@ -95,11 +101,15 @@ def minimax(board, depth, alpha, beta, max_player, howDeep, storedBoards = [], s
     min_eval = 10
     for move in get_legal_moves(board):
         board.push_san(move)
+
+        if board.fen() in storedBoards:
+                continue
+
         evaluation = minimax(board, depth - 1, alpha, beta, True, howDeep + 1)
 
-        # if evaluation != 0:
-        #     #save the board.fen() and eval to transposition table
-        #     storedBoards.append(board.fen())
+        if evaluation != 0:
+            #save the board.fen() and eval to storedBoards
+            storedBoards.append(board.fen())
         #     storedScores.append(evaluation)
 
         board.pop()
@@ -203,7 +213,7 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 14
+DEPTH = 10
 
 # while True:
 #     if game(DEPTH) == "White":
