@@ -81,7 +81,7 @@ def minimax(board, depth, alpha, beta, max_player, howDeep):
             if max_eval >= beta:
                 break
             alpha = max(alpha, evaluation)
-            
+
         return max_eval
 
     min_eval = 10
@@ -191,7 +191,8 @@ def game(depth):
 # white_wins = 0
 # black_wins = 0
 
-DEPTH = 10
+#Game is solved for every opening move at depth = 20
+DEPTH = 12
 
 # while True:
 #     if game(DEPTH) == "White":
