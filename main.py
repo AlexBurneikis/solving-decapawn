@@ -32,4 +32,4 @@ def game(depth):
     print(moves)
 
 if __name__ == "__main__":
-    game(6)
+    game(10)
