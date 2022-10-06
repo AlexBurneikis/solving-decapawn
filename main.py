@@ -1,239 +1,35 @@
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
-
-import random
-import math
 import chess
+import chess.pgn
+from get_move import get_move
+from decapawn_moves import get_decapawn_moves
+from decapawn_win import is_win
 
-#we going crazy now
-from threading import Thread
-
-class ThreadWithReturnValue(Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs={}, Verbose=None):
-        Thread.__init__(self, group, target, name, args, kwargs)
-        self._return = None
-    def run(self):
-        if self._target is not None:
-            self._return = self._target(*self._args,
-                                                **self._kwargs)
-    def join(self, *args):
-        Thread.join(self, *args)
-        return self._return
-
-def is_win(board):
-    #determine who has won or if no one has
-
-    #check if a pawn has reached the opposite rank
-    for i in ["a", "b", "c", "d", "e"]:
-        square = chess.parse_square(f'{i}1')
-
-        if board.piece_at(square) is None:
-            continue
-
-        if board.piece_at(square).color == chess.BLACK:
-            return "Black"
-
-    for i in ["a", "b", "c", "d", "e"]:
-        square = chess.parse_square(f'{i}5')
-
-        if board.piece_at(square) is None:
-            continue
-
-        if board.piece_at(square).color == chess.WHITE:
-            return "White"
-
-    #whoever cant play loses
-    if board.is_stalemate():
-        if board.turn:
-            return "Black"
-        return "White"
-
-    return False
-
-def get_legal_moves(board):
-    #get legal moves without pawns moving two spaces
-    #shuffle the legal moves
-    legal_moves = [str(i) for i in board.legal_moves]
-
-    #get the moves to remove
-    to_remove = []
-    for i in legal_moves:
-        if (int(i[3]) - int(i[1])) == 2:
-            to_remove.append(i)
-
-    #remove them
-    for i in to_remove:
-        legal_moves.remove(i)
-
-    #randomize legalMoves - (otherwise same game every time)
-    random.shuffle(legal_moves)
-
-    return legal_moves
-
-def evaluate(board, depth):
-    score = 0
-
-    if is_win(board) == "White":
-        score += math.floor(100/(depth))
-
-    if is_win(board) == "Black":
-        score -= math.floor(100/(depth))
-
-    return score
-
-def minimax(board, depth, alpha, beta, max_player, howDeep):
-    if depth == 0 or is_win(board):
-        return evaluate(board, howDeep + 1)
-
-    if max_player:
-        max_eval = -10
-        for move in get_legal_moves(board):
-            board.push_san(move)
-            evaluation = minimax(board, depth - 1, alpha, beta, False, howDeep + 1)
-            board.pop()
-
-            max_eval = max(max_eval, evaluation)
-            if max_eval >= beta:
-                break
-            alpha = max(alpha, evaluation)
-
-        return max_eval
-
-    min_eval = 10
-    for move in get_legal_moves(board):
-        board.push_san(move)
-        evaluation = minimax(board, depth - 1, alpha, beta, True, howDeep + 1)
-        board.pop()
-
-        min_eval = min(min_eval, evaluation)
-        if min_eval <= alpha:
-            break
-        beta = min(beta, evaluation)
-
-    return min_eval
-
-def thread_function(board, move, depth):
-    board.push_san(move)
-    score = minimax(board, depth, -10, 10, board.turn, 0)
-    board.pop()
-        
-    print(f"{move}: {score}")
-
-    return [score, move]
-
-
-def get_move(board, depth):
-    #for all the legalMoves return the one with best minimax score
-
-    best_move = get_legal_moves(board)[0]
-    best_score = -10
-
-    moves = []
-    threads = []
-
-    for move in get_legal_moves(board):
-        #make a copy of the board
-        board_copy = board.copy()
-        #make a thread for each move
-        t = ThreadWithReturnValue(target=thread_function, args=(board_copy, move, depth))
-
-        threads.append(t)
-
-    for t in threads:
-        t.start()
-
- # Wait for all of them to finish
-    for t in threads:
-        moves.append(t.join())    
-
-    #get the best move
-    for move in moves:
-        score = move[0]
-
-        if not board.turn:
-            score *= -1
-
-        if score > best_score:
-            best_score = score
-            best_move = move[1]
-
-    if not board.turn:
-        best_score *= -1
-
-    return best_score, best_move
-
-def get_player_move(board, depth):
+def get_player_move(board):
     while True:
-        move = input("Enter a move: ")
-
-        #if player wants puter to play instead
-        if move == "":
-            move = get_move(board, depth)
-            print(move)
-            
-            #get confirmation from user
-            while True:
-                confirm = input("Enter to confirm, anything else to cancel: ")
-                if confirm == "":
-                    return move
-                break
-
         try:
-            move = str(board.parse_san(move))
-        except ValueError:
-            print("Invalid move")
-            continue
-        except TypeError:
-            continue
-        if move in get_legal_moves(board):
-            return 0, move
-        print("Invalid move")
+            move = board.parse_san(input("Enter move: "))
+            if move in get_decapawn_moves(board):
+                return move   
+        except:
+            pass
 
 def game(depth):
     board = chess.Board()
     board.set_board_fen("8/8/8/ppppp3/8/8/8/PPPPP3")
 
     moves = []
-    evals = []
 
     while not is_win(board):
         print(board)
-        print(("White" if board.turn else "Black") + " to play.")
 
-        #move = get_player_move(board, depth)
+        move = get_move(board, depth) #if board.turn else get_player_move(board)
 
-        move = get_move(board, depth)
+        print(str(move))
+        board.push(move)
+        moves.append(str(move))
 
-        print(f'Best move: {move}')
-        board.push_san(str(move[1]))
-
-        moves.append(str(board.peek()))
-        evals.append(move[0])
-
-    #post-game info
     print(board)
-    if is_win(board) == "White":
-        print("White wins")
-    elif is_win(board) == "Black":
-        print("Black wins")
     print(moves)
-    print(evals)
 
-    return is_win(board)
-
-# white_wins = 0
-# black_wins = 0
-
-#Game is solved for every opening move at depth = 20
-DEPTH = 10
-
-# while True:
-#     if game(DEPTH) == "White":
-#         white_wins += 1
-#     else:
-#         black_wins += 1
-#     print(f"White wins: {white_wins}")
-#     print(f"Black wins: {black_wins}")
-
-game(DEPTH)
+if __name__ == "__main__":
+    game(6)
